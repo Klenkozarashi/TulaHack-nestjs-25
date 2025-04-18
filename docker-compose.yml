@@ -1,0 +1,62 @@
+version: '3,8'
+
+services:
+  nestjs:
+    container_name: nestjs
+    env_file:
+      - .env.production
+    build:
+      context: .
+    networks:
+      - postgres
+    depends_on:
+      - postgres
+    volumes:
+      - /usr/src/app/node_modules
+    ports:
+      - "4000:4000" # API Entry port
+      - "9229:9229" # Server Debugging port
+    command: npm run start:prod
+    restart: unless-stopped
+
+  postgres:
+    container_name: postgres
+    image: postgres:15.2
+    env_file:
+      - .env.production
+    environment:
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - '5444:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 400m
+    networks:
+      - postgres
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    ports:
+      - '80:80' # Public HTTP Port
+      - '443:443' # Public HTTPS Port
+      - '81:81' # Admin Web Port
+    networks:
+      - nginx
+    volumes:
+      - /home/krimax/NGINX/data:/data
+      - /home/krimax/NGINX/letsencrypt:/etc/letsencrypt
+    restart: unless-stopped
+
+networks:
+  nginx:
+    external: true
+  postgres:
+    driver: bridge
+
+volumes:
+  mono-node-modules: null
+  pgdata:
