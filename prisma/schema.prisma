@@ -8,9 +8,17 @@ generator client {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  userId   String  @id @default(cuid())
+  email    String  @unique
+  name     String
+  password String
+  session  Session?
+}
+
+model Session {
+  sessionId String @id @default(uuid())
+  userId    String @unique
+  user      User   @relation(fields: [userId], references: [userId])
 }
 
 model Task {
