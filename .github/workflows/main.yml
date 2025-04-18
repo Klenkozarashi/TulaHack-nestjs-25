@@ -1,0 +1,26 @@
+name: Deploy on master branch push
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Execute remote commands via SSH
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: root
+          password: ${{ secrets.ROOT_SSH_PASSWORD }}
+          script: |
+            cd /root/TulaHack-nestjs-25/
+            git pull
+            docker compose build
+            docker compose up -d nestjs
