@@ -1,6 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { SqlService } from './sql.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateTaskDto } from './dto/create-task-dto';
+import { SuccessDto } from 'src/shared/globalDtos';
 
 @Injectable()
 export class TaskService {
@@ -55,7 +57,7 @@ export class TaskService {
     });
   }
 
-  async executeTask(subTaskId: number, executeSqlQuery: string) {
+  async executeTask(subTaskId: number, executeSqlQuery: string, sessionToken: string) {
     const subTask = await this.prisma.subTask.findFirst({
       where: { id: subTaskId },
       include: { task: true },
@@ -92,6 +94,18 @@ export class TaskService {
       correctResult.afterSnapshot,
     );
 
+    const { id } = await this.prisma.user.findFirst({
+      where: {
+        session: {
+          some: { sessionToken }
+        }
+      }
+    });
+
+    await this.prisma.completedTasks.create({
+      data: { userId: id, taskId: subTask.task.id }
+    });
+
     return {
       success: true,
       isCorrect: isCorrect && isCorrectSnapshot,
@@ -100,6 +114,26 @@ export class TaskService {
       executionTimeMs: userResult.executionTimeMs,
     };
   }
+
+  async createTask(createTaskDto: CreateTaskDto) {
+    await this.prisma.task.create({
+      data: {
+        title: createTaskDto.title,
+        description: createTaskDto.description ?? "",
+        sqlSchema: createTaskDto.sqlSchema,
+        fillData: createTaskDto.fillData,
+        level: createTaskDto.level,
+        subTask: {
+          createMany: {
+            data: [...createTaskDto.subTasks]
+          }          
+        },
+      }
+    });
+
+    return new SuccessDto();
+  }
+
   private compareSnapshots(
     userSnapshot: Record<string, any[]>,
     correctSnapshot: Record<string, any[]>,

@@ -42,3 +42,4 @@ lerna-debug.log*
 dev.db*
 redis
 dist
+prisma/**/*.sql

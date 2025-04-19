@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { SqlService } from './sql.service';
 import { TaskService } from './task.service';
 import { ExecuteTaskDto } from './dto/execute-task.dto';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('sql')
 export class SqlController {
@@ -10,8 +11,13 @@ export class SqlController {
     private readonly taskService: TaskService,
   ) {}
 
+  @UseGuards(AuthGuard)
   @Post('/execute-task')
-  executeSql(@Body() { subTaskId, query }: ExecuteTaskDto) {
-    return this.taskService.executeTask(subTaskId, query);
+  executeSql(
+    @Body() { subTaskId, query }: ExecuteTaskDto,
+    @Req() request: Request & { cookies: any }
+  ) {
+    const sessionToken = request.cookies["sessionToken"];
+    return this.taskService.executeTask(subTaskId, query, sessionToken);
   }
 }

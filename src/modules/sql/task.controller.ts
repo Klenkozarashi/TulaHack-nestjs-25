@@ -1,6 +1,7 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { SqlService } from './sql.service';
 import { TaskService } from './task.service';
+import { CreateTaskDto } from './dto/create-task-dto';
 
 @Controller('task')
 export class TaskController {
@@ -10,12 +11,17 @@ export class TaskController {
   ) {}
 
   @Get('/all')
-  getAllTasks() {
+  async getAllTasks() {
     return this.taskService.getAllTasks();
   }
 
   @Get('/:subTaskId')
-  getSubTaskById(@Param('subTaskId') subTaskId: number) {
+  async getSubTaskById(@Param('subTaskId') subTaskId: number) {
     return this.taskService.getSubTaskById(subTaskId);
+  }
+
+  @Post()
+  async createTask(@Body() createTaskDto: CreateTaskDto) {
+    return this.taskService.createTask(createTaskDto);
   }
 }
