@@ -5,14 +5,14 @@ meta {
 }
 
 post {
-  url: {{HOST}}/api/sql/execute-task
+  url: {{HOST}}/sql/execute-task
   body: json
   auth: none
 }
 
 body:json {
   {
-    "idTask": 2,
+    "subTaskId": 2,
     "query": "DELETE FROM users WHERE age < 48; SELECT * FROM users;"
   }
 }

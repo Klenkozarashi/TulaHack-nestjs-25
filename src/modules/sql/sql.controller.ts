@@ -12,7 +12,6 @@ export class SqlController {
 
   @Post('/execute-task')
   executeSql(@Body() { subTaskId, query }: ExecuteTaskDto) {
-    console.log('test');
     return this.taskService.executeTask(subTaskId, query);
   }
 }
