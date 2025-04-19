@@ -46,7 +46,7 @@ export class AuthController {
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
-    return { message: 'Успешный вход' };
+    return { message: 'Успешный вход', token: sessionToken };
   }
 
   @Post('logout')
