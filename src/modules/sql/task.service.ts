@@ -9,6 +9,17 @@ export class TaskService {
     private prisma: PrismaService,
   ) {}
 
+  async getAllTasks() {
+    return this.prisma.task.findMany({ include: { subTask: true } });
+  }
+
+  async getSubTaskById(subTaskId: number) {
+    return this.prisma.subTask.findFirst({
+      where: { id: subTaskId },
+      include: { task: true },
+    });
+  }
+
   async executeTask(subTaskId: number, executeSqlQuery: string) {
     const subTask = await this.prisma.subTask.findFirst({
       where: { id: subTaskId },
