@@ -10,7 +10,42 @@ export class TaskService {
   ) {}
 
   async getAllTasks() {
-    return this.prisma.task.findMany({ include: { subTask: true } });
+    const tasks = await this.prisma.task.findMany({
+      include: { subTask: true },
+    });
+
+    return tasks.map((task) => {
+      const parsed = this.parseSqlSchema(task.sqlSchema);
+
+      return {
+        ...task,
+        table: parsed?.table,
+        columns: parsed?.columns,
+      };
+    });
+  }
+
+  private parseSqlSchema(
+    sqlSchema: string,
+  ): { table: string; columns: string[] } | null {
+    const createTableMatch = sqlSchema.match(
+      /CREATE TABLE (\w+)\s*\(([^)]+)\)/i,
+    );
+
+    if (!createTableMatch) {
+      return null;
+    }
+
+    const table = createTableMatch[1];
+
+    const columnsRaw = createTableMatch[2]
+      .split(',')
+      .map((col) => col.trim().split(' ')[0]); // Берём только имя столбца
+
+    return {
+      table,
+      columns: columnsRaw,
+    };
   }
 
   async getSubTaskById(subTaskId: number) {

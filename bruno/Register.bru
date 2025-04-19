@@ -1,0 +1,18 @@
+meta {
+  name: Register
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{HOST}}/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "test",
+    "password": "DELETE FROM users WHERE age < 48; SELECT * FROM users;"
+  }
+}
