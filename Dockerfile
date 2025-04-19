@@ -7,7 +7,8 @@ COPY prisma ./prisma
 RUN npm install
 RUN npx prisma generate
 
-COPY . .
+COPY src ./src
+COPY tsconfig.json ./
 RUN npm run build
 
 FROM node:20.11-alpine
