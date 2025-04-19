@@ -3,10 +3,14 @@ import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { AuthGuard } from '../../guards/auth.guard';
 import { ExecuteTaskDto } from './dto/register.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly prisma: PrismaService
+  ) {}
 
   @Post('register')
   async register(
@@ -65,5 +69,26 @@ export class AuthController {
     res.clearCookie('sessionToken');
 
     return { message: 'Вы успешно вышли' };
+  }
+
+
+  @Post("/checkSession")
+  async checkSession(@Req() req: Request & { cookies: any }) {
+    const session = req.cookies["sessionToken"];
+
+    if (!session) return false;
+
+    const user = await this.prisma.user.findFirst({
+      where: {
+        session: {
+          some: { sessionToken: session },
+        },
+      },
+      include: { session: { where: { sessionToken: session } } },
+    });
+
+    if (!user) return false;
+
+    return true;
   }
 }
