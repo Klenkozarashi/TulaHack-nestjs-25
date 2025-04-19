@@ -39,21 +39,3 @@ model SubTask {
   taskId      Int
   task        Task    @relation(fields: [taskId], references: [id])
 }
-
-model Task {
-  id          Int       @id @default(autoincrement())
-  title       String
-  description String
-  sqlSchema   String
-  fillData    String
-  subTask     SubTask[]
-}
-
-model SubTask {
-  id          Int     @id @default(autoincrement())
-  name        String
-  description String?
-  solution    String
-  taskId      Int
-  task        Task    @relation(fields: [taskId], references: [id])
-}

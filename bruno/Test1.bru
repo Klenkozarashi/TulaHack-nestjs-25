@@ -4,8 +4,15 @@ meta {
   seq: 3
 }
 
-get {
-  url: fadf
-  body: none
+post {
+  url: {{HOST}}/auth/login
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "email": "test",
+    "password": "DELETE FROM users WHERE age < 48; SELECT * FROM users;"
+  }
 }

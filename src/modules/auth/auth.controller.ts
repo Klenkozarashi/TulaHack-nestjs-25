@@ -2,6 +2,7 @@ import { Controller, Post, Body, Res, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { AuthGuard } from '../../guards/auth.guard';
+import { ExecuteTaskDto } from './dto/register.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -9,7 +10,7 @@ export class AuthController {
 
   @Post('register')
   async register(
-    @Body() body: { email: string; password: string; name?: string },
+    @Body() body: ExecuteTaskDto,
     @Res({ passthrough: true }) res: Response,
   ) {
     const { sessionToken } = await this.authService.register(
