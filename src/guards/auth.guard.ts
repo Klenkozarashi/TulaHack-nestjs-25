@@ -26,6 +26,9 @@ export class AuthGuard implements CanActivate {
       include: { session: { where: { sessionToken: session } } },
     });
 
+    console.log(session);
+    console.log(user);
+
     if (!user) throw new UnauthorizedException('Сессия невалидна');
 
     request.user = user;
