@@ -27,8 +27,8 @@ export class TaskController {
     return this.taskService.getSubTaskById(subTaskId);
   }
 
-  @Roles('ADMIN')
-  @UseGuards(RolesGuard)
+  /*@Roles('ADMIN')
+  @UseGuards(RolesGuard)*/
   @Post()
   async createTask(@Body() createTaskDto: CreateTaskDto) {
     return this.taskService.createTask(createTaskDto);
