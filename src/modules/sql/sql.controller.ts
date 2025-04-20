@@ -11,13 +11,13 @@ export class SqlController {
     private readonly taskService: TaskService,
   ) {}
 
-  @UseGuards(AuthGuard)
   @Post('/execute-task')
+  @UseGuards(AuthGuard)
   executeSql(
     @Body() { subTaskId, query }: ExecuteTaskDto,
-    @Req() request: Request & { cookies: any }
+    @Req() request: Request & { cookies: any },
   ) {
-    const sessionToken = request.cookies["sessionToken"];
+    const sessionToken = request.cookies['sessionToken'];
     return this.taskService.executeTask(subTaskId, query, sessionToken);
   }
 }

@@ -10,9 +10,13 @@ post {
   auth: none
 }
 
+headers {
+  Cookie: sessionToken=43ab339d-3554-4346-9faf-27422a1dea2d
+}
+
 body:json {
   {
-    "subTaskId": 2,
-    "query": "DELETE FROM users WHERE age < 48; SELECT * FROM users;"
+    "subTaskId": 7,
+    "query": "SELECT * FROM users;"
   }
 }

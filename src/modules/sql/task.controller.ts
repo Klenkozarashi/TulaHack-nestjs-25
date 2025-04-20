@@ -17,12 +17,17 @@ export class TaskController {
     return this.taskService.getAllTasks();
   }
 
-  @Get('/:subTaskId')
+  @Get('/:taskId')
+  async getTaskById(@Param('taskId') taskId: number) {
+    return this.taskService.getTaskById(taskId);
+  }
+
+  @Get('/subTask/:subTaskId')
   async getSubTaskById(@Param('subTaskId') subTaskId: number) {
     return this.taskService.getSubTaskById(subTaskId);
   }
 
-  @Roles("ADMIN")
+  @Roles('ADMIN')
   @UseGuards(RolesGuard)
   @Post()
   async createTask(@Body() createTaskDto: CreateTaskDto) {

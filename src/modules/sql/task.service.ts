@@ -50,6 +50,20 @@ export class TaskService {
     };
   }
 
+  async getTaskById(taskId: number) {
+    const task = await this.prisma.task.findFirst({
+      where: { id: taskId },
+      include: { subTask: true },
+    });
+
+    const parsed = this.parseSqlSchema(task.sqlSchema);
+    return {
+      ...task,
+      table: parsed?.table,
+      columns: parsed?.columns,
+    };
+  }
+
   async getSubTaskById(subTaskId: number) {
     return this.prisma.subTask.findFirst({
       where: { id: subTaskId },
@@ -57,7 +71,11 @@ export class TaskService {
     });
   }
 
-  async executeTask(subTaskId: number, executeSqlQuery: string, sessionToken: string) {
+  async executeTask(
+    subTaskId: number,
+    executeSqlQuery: string,
+    sessionToken: string,
+  ) {
     const subTask = await this.prisma.subTask.findFirst({
       where: { id: subTaskId },
       include: { task: true },
@@ -97,13 +115,13 @@ export class TaskService {
     const { id } = await this.prisma.user.findFirst({
       where: {
         session: {
-          some: { sessionToken }
-        }
-      }
+          some: { sessionToken },
+        },
+      },
     });
 
     await this.prisma.completedTasks.create({
-      data: { userId: id, taskId: subTask.task.id }
+      data: { userId: id, taskId: subTask.task.id },
     });
 
     return {
@@ -119,16 +137,16 @@ export class TaskService {
     await this.prisma.task.create({
       data: {
         title: createTaskDto.title,
-        description: createTaskDto.description ?? "",
+        description: createTaskDto.description ?? '',
         sqlSchema: createTaskDto.sqlSchema,
         fillData: createTaskDto.fillData,
         level: createTaskDto.level,
         subTask: {
           createMany: {
-            data: [...createTaskDto.subTasks]
-          }          
+            data: [...createTaskDto.subTasks],
+          },
         },
-      }
+      },
     });
 
     return new SuccessDto();
