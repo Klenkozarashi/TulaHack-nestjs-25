@@ -9,7 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
   ) {}
 
   @Post('register')
@@ -71,10 +71,9 @@ export class AuthController {
     return { message: 'Вы успешно вышли' };
   }
 
-
-  @Post("/checkSession")
+  @Post('/checkSession')
   async checkSession(@Req() req: Request & { cookies: any }) {
-    const session = req.cookies["sessionToken"];
+    const session = req.cookies['sessionToken'];
 
     if (!session) return false;
 
