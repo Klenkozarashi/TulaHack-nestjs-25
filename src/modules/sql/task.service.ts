@@ -162,7 +162,7 @@ export class TaskService {
       correctResult.afterSnapshot,
     );
 
-    const { id } = await this.prisma.user.findFirst({
+    /*const { id } = await this.prisma.user.findFirst({
       where: {
         session: {
           some: { sessionToken },
@@ -172,7 +172,7 @@ export class TaskService {
 
     await this.prisma.completedTasks.create({
       data: { userId: id, taskId: subTask.task.id },
-    });
+    });*/
 
     return {
       success: true,

@@ -12,7 +12,7 @@ export class SqlController {
   ) {}
 
   @Post('/execute-task')
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   executeSql(
     @Body() { subTaskId, query }: ExecuteTaskDto,
     @Req() request: Request & { cookies: any },
