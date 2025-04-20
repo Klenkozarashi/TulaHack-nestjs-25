@@ -57,10 +57,60 @@ export class TaskService {
     });
 
     const parsed = this.parseSqlSchema(task.sqlSchema);
+    const insertParsed = this.parseInsertData(task.fillData);
+
     return {
       ...task,
       table: parsed?.table,
       columns: parsed?.columns,
+      values: insertParsed?.values,
+    };
+  }
+
+  private parseInsertData(
+    fillData: string,
+  ): { columns: string[]; values: any[][] } | null {
+    const insertMatch = fillData.match(
+      /INSERT INTO \w+ \(([^)]+)\)\s+VALUES\s+(.+);?/is,
+    );
+
+    if (!insertMatch) {
+      return null;
+    }
+
+    const columnsRaw = insertMatch[1]; // "name, email, age"
+    const valuesRaw = insertMatch[2]; // всё что после VALUES (...)
+
+    const columns = columnsRaw.split(',').map((col) => col.trim());
+
+    // Теперь аккуратно парсим группы значений (с учётом вложенных скобок)
+    const valueGroups: any[][] = [];
+
+    const regex = /\(([^)]+)\)/g;
+    let match;
+
+    while ((match = regex.exec(valuesRaw)) !== null) {
+      const group = match[1]
+        .split(',')
+        .map((val) => val.trim())
+        .map((val) => {
+          if (val.startsWith("'") && val.endsWith("'")) {
+            return val.slice(1, -1).replace(/''/g, "'"); // обработка одинарных кавычек внутри строки
+          }
+          const num = Number(val);
+          return isNaN(num) ? val : num;
+        });
+      valueGroups.push(group);
+    }
+
+    // Добавим автоинкрементный ID, если его нет в insert-е
+    for (let i = 0; i < valueGroups.length; i++) {
+      valueGroups[i] = [i + 1, ...valueGroups[i]];
+    }
+
+    return {
+      columns: ['id', ...columns],
+      values: valueGroups,
     };
   }
 
