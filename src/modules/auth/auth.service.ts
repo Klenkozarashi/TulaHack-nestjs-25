@@ -2,10 +2,14 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
+import { RolesService } from '../roles/roles.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly rolesService: RolesService
+  ) {}
 
   async register(email: string, password: string, name?: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -17,11 +21,14 @@ export class AuthService {
     if (findUser)
       throw new BadRequestException('Пользователь с такой почтой существует');
 
+    const role = await this.rolesService.getCommonRole("USER");
+
     const user = await this.prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         name,
+        roleId: role.id
       },
     });
 

@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { SqlService } from './sql.service';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task-dto';
+import { RolesGuard } from '../roles/roles.guard';
+import { Roles } from '../roles/roles-auth.decorator';
 
 @Controller('task')
 export class TaskController {
@@ -20,6 +22,8 @@ export class TaskController {
     return this.taskService.getSubTaskById(subTaskId);
   }
 
+  @Roles("ADMIN")
+  @UseGuards(RolesGuard)
   @Post()
   async createTask(@Body() createTaskDto: CreateTaskDto) {
     return this.taskService.createTask(createTaskDto);

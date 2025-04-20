@@ -14,6 +14,8 @@ model User {
   password       String
   session        Session[] // У пользователя может быть больше одной сессии
   completedTasks CompletedTasks[]
+  roleId         Int       
+  role           Role      @relation(fields: [roleId], references: [id])
 }
 
 model Session {
@@ -21,6 +23,13 @@ model Session {
   sessionToken String @unique
   userId       Int
   user         User   @relation(fields: [userId], references: [id])
+}
+
+model Role {
+  id          Int    @id @default(autoincrement())
+  value       String @unique
+  description String
+  users       User[]
 }
 
 model CompletedTasks {
